@@ -11,7 +11,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^1.17.1"
+    "nodemon": "^1.17.1",
+    "prettier": "^1.12.1"
   },
   "dependencies": {
     "bitbar": "^0.3.0",

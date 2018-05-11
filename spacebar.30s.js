@@ -9,7 +9,7 @@
 
 const bitbar = require('bitbar');
 const nodeFetch = require('node-fetch');
-const cacheman = require('cacheman')
+const cacheman = require('cacheman');
 const cachemanFile = require('cacheman-file');
 const cached = require('fetch-cached');
 const moment = require('moment');
@@ -24,7 +24,7 @@ let cache = new cacheman({
 const fetch = cached.default({
   fetch: nodeFetch,
   cache: {
-    get: (k) => cache.get(k),
+    get: k => cache.get(k),
     set: (k, v) => cache.set(k, v)
   }
 });
@@ -34,74 +34,71 @@ const fetch = cached.default({
  *
  * @return promise
  */
-let httpGet = (url) => {
+let httpGet = url => {
   let options = {
     method: 'GET',
     mode: 'cors'
   };
 
   return fetch(url, options).then(response => response.json());
-}
-
+};
 
 // Get upcoming launches
-httpGet('https://api.spacexdata.com/v2/launches/upcoming').then((response) => {
-
-  let output = [];
-
-  output.push({
-    text: 'SpaceX',
-    color: '#ff79d7',
-    dropdown: false,
-  });
-
-  output.push(bitbar.sep);
-
-
-  response.forEach((launch) => {
-
-    let submenu = [];
-
-    submenu.push({
-      text: "Rocket: " + launch.rocket.rocket_name,
-      color: 'black'
-    });
-
-    submenu.push({
-      text: "Launching from: " + launch.launch_site.site_name_long,
-      color: 'black'
-    });
-
-    submenu.push({
-      text: "Time to launch: " + moment.utc(launch.launch_date_utc).fromNow(),
-      color: 'black'
-    });
-
-    if (null !== launch.details) {
-      submenu.push({
-        text: "Detail: " + launch.details,
-        color: 'black'
-      });
-    }
-
-    if (null !== launch.links.video_link) {
-      submenu.push({
-        text: 'Video',
-        href: launch.links.video_link
-      });
-    }
+httpGet('https://api.spacexdata.com/v2/launches/upcoming')
+  .then(response => {
+    let output = [];
 
     output.push({
-      text: "Launch #" + launch.flight_number,
-      color: 'black',
-      submenu: submenu
+      text: 'SpaceX Launches',
+      color: '#333',
+      dropdown: false
     });
+
+    output.push(bitbar.sep);
+
+    response.forEach(launch => {
+      let submenu = [];
+
+      submenu.push({
+        text: 'Rocket: ' + launch.rocket.rocket_name,
+        color: 'black'
+      });
+
+      submenu.push({
+        text: 'Launching from: ' + launch.launch_site.site_name_long,
+        color: 'black'
+      });
+
+      submenu.push({
+        text: 'Time to launch: ' + moment.utc(launch.launch_date_utc).fromNow(),
+        color: 'black'
+      });
+
+      if (null !== launch.details) {
+        submenu.push({
+          text: 'Detail: ' + launch.details,
+          color: 'black'
+        });
+      }
+
+      if (null !== launch.links.video_link) {
+        submenu.push({
+          text: 'Video',
+          href: launch.links.video_link
+        });
+      }
+
+      output.push({
+        text: 'Launch #' + launch.flight_number,
+        color: 'black',
+        submenu: submenu
+      });
+    });
+
+    output.push(bitbar.sep);
+
+    bitbar(output);
   })
-
-
-  output.push(bitbar.sep);
-
-  bitbar(output);
-}).catch((error) => {
-  console.error('Error', error);
-});
+  .catch(error => {
+    console.error('Error', error);
+  });
