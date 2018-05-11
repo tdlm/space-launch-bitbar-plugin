@@ -8,40 +8,8 @@
 //# <bitbar.desc>Displays upcoming SpaceX Launches.</bitbar.desc>
 
 const bitbar = require('bitbar');
-const nodeFetch = require('node-fetch');
-const cacheman = require('cacheman');
-const cachemanFile = require('cacheman-file');
-const cached = require('fetch-cached');
+const { httpGet } = require('./lib/helpers');
 const moment = require('moment');
-
-// Set up cacheman.
-let cache = new cacheman({
-  ttl: 5,
-  engine: 'file'
-});
-
-// Set up cached node-fetch.
-const fetch = cached.default({
-  fetch: nodeFetch,
-  cache: {
-    get: k => cache.get(k),
-    set: (k, v) => cache.set(k, v)
-  }
-});
-
-/**
- * HTTP Get Helper
- *
- * @return promise
- */
-let httpGet = url => {
-  let options = {
-    method: 'GET',
-    mode: 'cors'
-  };
-
-  return fetch(url, options).then(response => response.json());
-};
 
 // Get upcoming launches
 httpGet('https://api.spacexdata.com/v2/launches/upcoming')
