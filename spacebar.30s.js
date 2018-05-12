@@ -13,60 +13,59 @@ const moment = require('moment');
 
 // Get upcoming launches
 httpGet('https://api.spacexdata.com/v2/launches/upcoming')
-  .then(response => {
-    let output = [];
+    .then(response => {
+        let output = [];
 
-    output.push({
-      text: 'SpaceX Launches',
-      color: '#333',
-      dropdown: false
-    });
-
-    output.push(bitbar.sep);
-
-    response.forEach(launch => {
-      let submenu = [];
-
-      submenu.push({
-        text: 'Rocket: ' + launch.rocket.rocket_name,
-        color: 'black'
-      });
-
-      submenu.push({
-        text: 'Launching from: ' + launch.launch_site.site_name_long,
-        color: 'black'
-      });
-
-      submenu.push({
-        text: 'Time to launch: ' + moment.utc(launch.launch_date_utc).fromNow(),
-        color: 'black'
-      });
-
-      if (null !== launch.details) {
-        submenu.push({
-          text: 'Detail: ' + launch.details,
-          color: 'black'
+        output.push({
+            text: 'SpaceX Launches',
+            color: '#333',
+            dropdown: false
         });
-      }
 
-      if (null !== launch.links.video_link) {
-        submenu.push({
-          text: 'Video',
-          href: launch.links.video_link
+        output.push(bitbar.sep);
+
+        response.forEach(launch => {
+            let submenu = [];
+
+            submenu.push({
+                text: 'Rocket: ' + launch.rocket.rocket_name,
+                color: 'black'
+            });
+
+            submenu.push({
+                text: 'Launching from: ' + launch.launch_site.site_name_long,
+                color: 'black'
+            });
+
+            submenu.push({
+                text:
+                    'Time to launch: ' +
+                    moment.utc(launch.launch_date_utc).fromNow(),
+                color: 'black'
+            });
+
+            if (null !== launch.details) {
+                submenu.push({
+                    text: 'Detail: ' + launch.details,
+                    color: 'black'
+                });
+            }
+
+            if (null !== launch.links.video_link) {
+                submenu.push({
+                    text: 'Video',
+                    href: launch.links.video_link
+                });
+            }
+
+            output.push({
+                text: 'Launch #' + launch.flight_number,
+                color: 'black',
+                submenu: submenu
+            });
         });
-      }
 
-      output.push({
-        text: 'Launch #' + launch.flight_number,
-        color: 'black',
-        submenu: submenu
-      });
+        output.push(bitbar.sep);
+
+        bitbar(output);
     });
-
-    output.push(bitbar.sep);
-
-    bitbar(output);
-  })
-  .catch(error => {
-    console.error('Error', error);
-  });
