@@ -32,3 +32,7 @@ ln -sf spacebar.30s.js <plugins>/spacebar.30s.js
 # <plugins> is the BitBar plugins directory path.
 rm <plugins>/spacebar.30s.js
 ```
+
+## License
+
+[MIT](LICENSE)
