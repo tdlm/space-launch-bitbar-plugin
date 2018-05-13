@@ -14,7 +14,9 @@
   ],
   "author": "Scott Weaver",
   "license": "MIT",
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^4.19.1"
+  },
   "dependencies": {
     "bitbar": "^0.3.0",
     "cacheman": "^2.2.1",
