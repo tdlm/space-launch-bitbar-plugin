@@ -6,15 +6,19 @@
   "scripts": {
     "lint": "eslint spacebar.30s.js lib/*.js"
   },
-  "keywords": ["spacex", "space x", "bitbar", "bitbar plugin"],
+  "keywords": [
+    "spacex",
+    "space x",
+    "bitbar",
+    "bitbar plugin"
+  ],
   "author": "Scott Weaver",
   "license": "MIT",
-  "devDependencies": {
-    "nodemon": "^1.17.1"
-  },
+  "devDependencies": {},
   "dependencies": {
     "bitbar": "^0.3.0",
     "cacheman": "^2.2.1",
+    "cacheman-file": "^0.2.1",
     "fetch-cached": "^2.0.3",
     "moment": "^2.20.1",
     "node-fetch": "^2.0.0",
