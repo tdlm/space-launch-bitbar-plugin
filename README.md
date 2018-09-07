@@ -1,14 +1,14 @@
-# spacex-bitbar-plugin
+# space-launch-bitbar-plugin
 
-SpaceX plugin for [BitBar](https://github.com/matryer/bitbar)
+Space Launch plugin for [BitBar](https://github.com/matryer/bitbar)
 
-Polls https://api.spacexdata.com/v2/launches/upcoming for upcoming SpaceX launches and displays them as a top menu bar dropdown.
+Polls https://launchlibrary.net/1.4/launch for upcoming space launches and displays them as a top menu bar dropdown.
 
 ## Download Plugin
 
 ```bash
-git clone git@github.com:tdlm/spacex-bitbar-plugin.git
-cd spacex-bitbar-plugin
+git clone git@github.com:tdlm/space-launch-bitbar-plugin.git
+cd space-launch-bitbar-plugin
 ```
 
 ## Install Plugin
