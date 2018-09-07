@@ -37,7 +37,7 @@ const fetch = cached.default({
  * @return {Promise}
  */
 function loadLaunches() {
-    return fetch('https://launchlibrary.net/1.4/launch')
+    return fetch('https://launchlibrary.net/1.4/launch/next/15')
         .then(response => response.json());
 }
 
@@ -50,7 +50,7 @@ loadLaunches()
             fetch(`https://launchlibrary.net/1.4/launch/${launch.id}`).then(response => response.json()).then(response => response.launches.pop())
         )).then(results => {
             output.push({
-                text: 'Space Launches',
+                text: ':rocket:',
                 color: '#333',
                 dropdown: false
             });
@@ -63,12 +63,13 @@ loadLaunches()
                     videos = [];
 
                 submenu.push({
-                    text: 'Rocket: ' + launch.rocket.name,
-                    color: 'black'
+                    text: launch.lsp.name,
+                    color: 'red',
+                    href: launch.lsp.wikiURL
                 });
 
                 submenu.push({
-                    text: 'Provider: ' + launch.lsp.name,
+                    text: 'Rocket: ' + launch.rocket.name,
                     color: 'black'
                 });
 
@@ -114,7 +115,7 @@ loadLaunches()
                 }
 
                 output.push({
-                    text: launch.lsp.abbrev + ' / #' + launch.id,
+                    text: launch.lsp.abbrev + ' / ' + launch.rocket.name,
                     color: 'black',
                     submenu: submenu
                 });
