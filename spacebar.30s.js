@@ -46,7 +46,7 @@ httpGet('https://api.spacexdata.com/v2/launches/upcoming')
 
             if (null !== launch.details) {
                 submenu.push({
-                    text: 'Detail: ' + launch.details,
+                    text: 'Detail: ' + launch.details.trunc(75),
                     color: 'black'
                 });
             }
