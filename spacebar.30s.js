@@ -8,64 +8,127 @@
 //# <bitbar.desc>Displays upcoming SpaceX Launches.</bitbar.desc>
 
 const bitbar = require('bitbar');
-const { httpGet } = require('./lib/helpers');
 const moment = require('moment');
 
+const nodeFetch = require('node-fetch');
+const cacheman = require('cacheman');
+const cached = require('fetch-cached');
+
+// TODO: Move back to helpers.js
+const cache = new cacheman({
+    ttl: 10 * 60, // 10 minutes.
+    engine: 'file'
+});
+
+// TODO: Move back to helpers.js
+const fetch = cached.default({
+    fetch: nodeFetch,
+    cache: {
+        get: k => cache.get(k),
+        set: (k, v) => cache.set(k, v)
+    }
+});
+
+/**
+ * Fetch Launches and convert to JSON.
+ *
+ * TODO: Move this to helpers.js
+ *
+ * @return {Promise}
+ */
+function loadLaunches() {
+    return fetch('https://launchlibrary.net/1.4/launch/next/15')
+        .then(response => response.json());
+}
+
+let output = [];
+
 // Get upcoming launches
-httpGet('https://api.spacexdata.com/v2/launches/upcoming')
+loadLaunches()
     .then(response => {
-        let output = [];
-
-        output.push({
-            text: 'SpaceX Launches',
-            color: '#333',
-            dropdown: false
-        });
-
-        output.push(bitbar.sep);
-
-        response.forEach(launch => {
-            let submenu = [];
-
-            submenu.push({
-                text: 'Rocket: ' + launch.rocket.rocket_name,
-                color: 'black'
+        Promise.all(response.launches.map(launch =>
+            fetch(`https://launchlibrary.net/1.4/launch/${launch.id}`).then(response => response.json()).then(response => response.launches.pop())
+        )).then(results => {
+            output.push({
+                text: ':rocket:',
+                color: '#333',
+                dropdown: false
             });
 
-            submenu.push({
-                text: 'Launching from: ' + launch.launch_site.site_name_long,
-                color: 'black'
-            });
+            output.push(bitbar.sep);
 
-            submenu.push({
-                text:
-                    'Time to launch: ' +
-                    moment.utc(launch.launch_date_utc).fromNow(),
-                color: 'black'
-            });
+            results.forEach(launch => {
+                let submenu = [],
+                    missions = [],
+                    videos = [];
 
-            if (null !== launch.details) {
                 submenu.push({
-                    text: 'Detail: ' + launch.details.trunc(75),
+                    text: launch.lsp.name,
+                    color: 'red',
+                    href: launch.lsp.wikiURL
+                });
+
+                submenu.push({
+                    text: 'Rocket: ' + launch.rocket.name,
                     color: 'black'
                 });
-            }
 
-            if (null !== launch.links.video_link) {
                 submenu.push({
-                    text: 'Video',
-                    href: launch.links.video_link
+                    text: 'Launching from: ' + launch.location.name,
+                    color: 'black'
                 });
-            }
 
-            output.push({
-                text: 'Launch #' + launch.flight_number,
-                color: 'black',
-                submenu: submenu
+                submenu.push({
+                    text: 'Time to launch: ' + moment.utc(launch.isostart).fromNow(),
+                    color: 'black'
+                });
+
+                launch.missions.forEach(mission => {
+                    missions.push({
+                        text: mission.name + ': ' + mission.description,
+                        color: 'black'
+                    });
+                });
+
+                launch.vidURLs.forEach(videoURL => {
+                    videos.push({
+                        text: videoURL,
+                        color: 'red',
+                        href: videoURL
+                    });
+                });
+
+                if (missions.length) {
+                    submenu.push({
+                        text: 'Mission(s)',
+                        color: 'black',
+                        submenu: missions
+                    });
+                }
+
+                if (videos.length) {
+                    submenu.push({
+                        text: 'Video(s)',
+                        color: 'black',
+                        submenu: videos
+                    });
+                }
+
+                output.push({
+                    text: launch.lsp.abbrev + ' / ' + launch.rocket.name,
+                    color: 'black',
+                    submenu: submenu
+                });
             });
-        });
+        }).then(results => {
+            output.push(bitbar.sep);
+            bitbar(output);
+        })
+            .catch(error => {
+                console.log('error: ' + error);
+            });
 
-        output.push(bitbar.sep);
-
-        bitbar(output);
+    })
+    .catch(error => {
+        console.log('error: ' + error);
     });
