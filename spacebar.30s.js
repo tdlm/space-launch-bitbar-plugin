@@ -37,7 +37,7 @@ const fetch = cached.default({
  * @return {Promise}
  */
 function loadLaunches() {
-    return fetch('https://launchlibrary.net/1.4/launch/next/15')
+    return fetch('https://launchlibrary.net/1.4/launch/next/25')
         .then(response => response.json());
 }
 
