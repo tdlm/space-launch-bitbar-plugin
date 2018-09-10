@@ -7,6 +7,7 @@
 //# <bitbar.author.github>tdlm</bitbar.author.github>
 //# <bitbar.desc>Displays upcoming SpaceX Launches.</bitbar.desc>
 
+const config = require('./config');
 const bitbar = require('bitbar');
 const moment = require('moment');
 
@@ -15,10 +16,7 @@ const cacheman = require('cacheman');
 const cached = require('fetch-cached');
 
 // TODO: Move back to helpers.js
-const cache = new cacheman({
-    ttl: 10 * 60, // 10 minutes.
-    engine: 'file'
-});
+const cache = new cacheman(config.cache);
 
 // TODO: Move back to helpers.js
 const fetch = cached.default({
@@ -51,7 +49,6 @@ loadLaunches()
         )).then(results => {
             output.push({
                 text: ':rocket:',
-                color: '#333',
                 dropdown: false
             });
 
@@ -64,36 +61,36 @@ loadLaunches()
 
                 submenu.push({
                     text: launch.lsp.name,
-                    color: 'red',
+                    color: config.color.link,
                     href: launch.lsp.wikiURL
                 });
 
                 submenu.push({
                     text: 'Rocket: ' + launch.rocket.name,
-                    color: 'black'
+                    color: config.color.text
                 });
 
                 submenu.push({
                     text: 'Launching from: ' + launch.location.name,
-                    color: 'black'
+                    color: config.color.text
                 });
 
                 submenu.push({
                     text: 'Time to launch: ' + moment.utc(launch.isostart).fromNow(),
-                    color: 'black'
+                    color: config.color.text
                 });
 
                 launch.missions.forEach(mission => {
                     missions.push({
                         text: mission.name + ': ' + mission.description,
-                        color: 'black'
+                        color: config.color.text
                     });
                 });
 
                 launch.vidURLs.forEach(videoURL => {
                     videos.push({
                         text: videoURL,
-                        color: 'red',
+                        color: config.color.link,
                         href: videoURL
                     });
                 });
@@ -101,7 +98,7 @@ loadLaunches()
                 if (missions.length) {
                     submenu.push({
                         text: 'Mission(s)',
-                        color: 'black',
+                        color: config.color.text,
                         submenu: missions
                     });
                 }
@@ -109,14 +106,14 @@ loadLaunches()
                 if (videos.length) {
                     submenu.push({
                         text: 'Video(s)',
-                        color: 'black',
+                        color: config.color.text,
                         submenu: videos
                     });
                 }
 
                 output.push({
                     text: launch.lsp.abbrev + ' / ' + launch.rocket.name,
-                    color: 'black',
+                    color: config.color.text,
                     submenu: submenu
                 });
             });
