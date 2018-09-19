@@ -1,4 +1,4 @@
-#!/usr/bin/env /Users/scott/.nvm/versions/node/v7.10.1/bin/node
+#!/usr/bin/env node
 /* jshint esversion: 6 */
 
 //# <bitbar.title>spacebar</bitbar.title>
