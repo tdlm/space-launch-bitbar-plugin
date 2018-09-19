@@ -1,4 +1,4 @@
-#!/usr/bin/env /Users/scott/.nvm/versions/node/v7.10.1/bin/node
+#!/usr/bin/env ~/.nvm/versions/node/v7.10.1/bin/node
 /* jshint esversion: 6 */
 
 //# <bitbar.title>spacebar</bitbar.title>
@@ -39,7 +39,13 @@ function loadLaunches() {
         .then(response => response.json());
 }
 
-let output = [];
+let output = [],
+    errors = [];
+
+output.push({
+    text: ':rocket:',
+    dropdown: false
+});
 
 // Get upcoming launches
 loadLaunches()
@@ -47,10 +53,6 @@ loadLaunches()
         Promise.all(response.launches.map(launch =>
             fetch(`https://launchlibrary.net/1.4/launch/${launch.id}`).then(response => response.json()).then(response => response.launches.pop())
         )).then(results => {
-            output.push({
-                text: ':rocket:',
-                dropdown: false
-            });
 
             output.push(bitbar.sep);
 
@@ -122,10 +124,48 @@ loadLaunches()
             bitbar(output);
         })
             .catch(error => {
-                console.log('error: ' + error);
+
+                output.push(bitbar.sep);
+
+                errors.push({
+                    text: 'Message: ' + error.message,
+                    color: config.color.text
+                });
+
+                output.push({
+                    text: 'There was an error fetching data!',
+                    color: config.color.text
+                });
+
+                output.push({
+                    text: 'Error(s)',
+                    color: config.color.text,
+                    submenu: errors
+                });
+
+                bitbar(output);
             });
 
     })
     .catch(error => {
-        console.log('error: ' + error);
+
+        output.push(bitbar.sep);
+
+        errors.push({
+            text: 'Message: ' + error.message,
+            color: config.color.text
+        });
+
+        output.push({
+            text: 'There was an error fetching data!',
+            color: config.color.text
+        });
+
+        output.push({
+            text: 'Error(s)',
+            color: config.color.text,
+            submenu: errors
+        });
+
+        bitbar(output);
     });
